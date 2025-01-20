@@ -69,7 +69,8 @@ select seller
 from final;
 
 WITH cust AS (
-    SELECT
+    select
+    customer_id,
           CASE 
             WHEN age BETWEEN 16 AND 25 THEN '16-25'
             WHEN age BETWEEN 26 AND 40 THEN '26-40'
@@ -81,9 +82,10 @@ SELECT
     age_category,
     COUNT(DISTINCT customer_id) AS age_count
 FROM cust
-WHERE customer_id IN (SELECT customer_id FROM sales)
+/*WHERE customer_id IN (SELECT customer_id FROM sales)*/
 GROUP BY age_category
 ORDER BY age_category;
+/*с условием задачи не согласен, поскольку здесь приведены все лиды, включая тех, кто покупок не делал*/
 
 with 
 /*собираем всех исходные данные в витрину*/
@@ -149,4 +151,3 @@ distinct customer
 , seller
 from pain
 where sale_date=frst_date and price=0;
-
