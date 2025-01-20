@@ -24,14 +24,22 @@ employees.employee_id
 , floor(AVG (products.price*sales.quantity)) as average_income
 from sales  
 join products on products.product_id=sales.product_id 
+join employees on employees.employee_id=sales.sales_person_id
+group by employees.employee_id, trim(CONCAT(CONCAT(first_name, ' '), last_name))),
+avg_test as (
+select 
+AVG(products.price*sales.quantity) as avg_lead
+from sales  
+join products on products.product_id=sales.product_id 
 join employees on employees.employee_id=sales.sales_person_id 
-group by employees.employee_id, trim(CONCAT(CONCAT(first_name, ' '), last_name)))
+)
 select 
 seller 
 , average_income
 from PAIN
-where average_income < (select FLOOR(AVG (INCOME)) from PAIN)
+where average_income < (select avg_lead from avg_test)
 order by average_income asc;
+
 
 
 with PAIN as (select 
