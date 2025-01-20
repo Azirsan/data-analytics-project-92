@@ -41,12 +41,11 @@ where average_income < (select avg_lead from avg_test)
 order by average_income asc;
 
 
-
 with PAIN as (select 
 employees.employee_id
 , trim(CONCAT(CONCAT(first_name, ' '), last_name)) as seller 
 , sale_date
-, FLOOR(products.price*sales.quantity) as income 
+, products.price*sales.quantity as income 
 , to_char(sale_date, 'day') AS day_of_week 
 , CASE
           WHEN extract (DOW from sale_date) = 0 THEN 7
@@ -59,7 +58,7 @@ final as (select
 employee_id
 ,seller
 , day_of_week
-, sum(income) as income
+, FLOOR(sum(income)) as income
 , sort
 from PAIN
 group by seller, employee_id, day_of_week, sort
@@ -71,9 +70,7 @@ from final;
 
 WITH cust AS (
     SELECT
-        customer_id,
-        TRIM(CONCAT(first_name, ' ', last_name)) AS customer,
-        CASE 
+          CASE 
             WHEN age BETWEEN 16 AND 25 THEN '16-25'
             WHEN age BETWEEN 26 AND 40 THEN '26-40'
             WHEN age > 40 THEN '40+'
@@ -93,7 +90,7 @@ with
 PAIN as (select 
  to_char(sale_date, 'YYYY-MM') AS selling_month
 , sales.customer_id as customer_id
-, floor(quantity*price) as lead_sale
+, quantity*price as lead_sale
 from sales 
 join employees on sales.sales_person_id=employees.employee_id
 join customers on customers.customer_id=sales.customer_id
@@ -102,10 +99,11 @@ join products on products.product_id=sales.product_id)
 select
 selling_month 
 , count (distinct customer_id) as total_customers 
-, sum (lead_sale) as income 
+, FLOOR(sum (lead_sale)) as income 
 from PAIN
 group by selling_month 
 order by selling_month;
+/* не забыть спросить почему у меня поехала сортировка на графике в пресет*/
 
 with 
 /*собираем всех исходные данные в витрину*/
